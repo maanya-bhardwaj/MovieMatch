@@ -41,6 +41,7 @@ function Room() {
   const [submitting, setSubmitting] = useState(false);
 
   const socketRef = useRef<WebSocket | null>(null);
+  const scrollPositionRef = useRef(0);
 
   // ==================================================
   // CURRENT USER
@@ -245,7 +246,16 @@ function Room() {
         all_finished: data.all_finished,
       });
 
+      scrollPositionRef.current = window.scrollY;
+
       setMovieIndex((previous) => previous + 1);
+
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: scrollPositionRef.current,
+            behavior: "instant",
+          });
+        });
 
       if (data.all_finished) {
         navigate(`/room/${roomCode}/results`);
