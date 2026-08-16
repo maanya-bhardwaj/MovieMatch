@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface Movie {
   id: number;
@@ -26,6 +26,14 @@ function MovieCard({
   const [dragging, setDragging] = useState(false);
 
   const startX = useRef(0);
+  const currentOffset = useRef(0);
+  const swiping = useRef(false);
+
+  useEffect(() => {
+  setOffsetX(0);
+  currentOffset.current = 0;
+  swiping.current = false;
+}, [movie.id]);
 
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -55,18 +63,18 @@ function MovieCard({
   // --------------------------------------------
 
   const handlePointerMove = (
-    event: React.PointerEvent<HTMLDivElement>
-  ) => {
+  event: React.PointerEvent<HTMLDivElement>
+) => {
+  if (!dragging || swiping.current) {
+    return;
+  }
 
-    if (!dragging) {
-      return;
-    }
+  const difference =
+    event.clientX - startX.current;
 
-    const difference =
-      event.clientX - startX.current;
-
-    setOffsetX(difference);
-  };
+  currentOffset.current = difference;
+  setOffsetX(difference);
+};
 
 
   // --------------------------------------------
@@ -74,36 +82,46 @@ function MovieCard({
   // --------------------------------------------
 
   const handlePointerUp = () => {
+  if (!dragging || swiping.current) {
+    return;
+  }
 
-    setDragging(false);
+  setDragging(false);
 
-    // Swipe right
-    if (offsetX > 120) {
+  const finalOffset = currentOffset.current;
 
-      setOffsetX(500);
+  // Swipe right → LIKE
+  if (finalOffset > 120) {
+    swiping.current = true;
+    setOffsetX(500);
 
-      setTimeout(() => {
-        onLike();
-      }, 200);
+    setTimeout(() => {
+      onLike();
+      swiping.current = false;
+      currentOffset.current = 0;
+    }, 200);
 
-      return;
-    }
+    return;
+  }
 
-    // Swipe left
-    if (offsetX < -120) {
+  // Swipe left → PASS
+  if (finalOffset < -120) {
+    swiping.current = true;
+    setOffsetX(-500);
 
-      setOffsetX(-500);
+    setTimeout(() => {
+      onPass();
+      swiping.current = false;
+      currentOffset.current = 0;
+    }, 200);
 
-      setTimeout(() => {
-        onPass();
-      }, 200);
+    return;
+  }
 
-      return;
-    }
-
-    // Not enough movement
-    setOffsetX(0);
-  };
+  // Not enough movement
+  currentOffset.current = 0;
+  setOffsetX(0);
+};
 
 
   const rotation =
@@ -126,7 +144,7 @@ function MovieCard({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        
       >
 
         {/* -------------------------------- */}
@@ -214,3 +232,6 @@ function MovieCard({
 }
 
 export default MovieCard;
+
+
+

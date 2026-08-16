@@ -853,7 +853,7 @@ h1 span {
 
   cursor: grab;
 
-  touch-action: none;
+  touch-action: pan-y;
 
   user-select: none;
 }
