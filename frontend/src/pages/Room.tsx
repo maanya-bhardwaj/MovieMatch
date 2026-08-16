@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import MovieCard, { Movie } from "../components/MovieCard";
-
+const API_URL = import.meta.env.VITE_API_URL;
+const WS_URL = API_URL.replace("https://", "wss://");
 interface Member {
   name: string;
   is_host: boolean;
@@ -63,7 +64,7 @@ function Room() {
     const fetchRoom = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/rooms/${roomCode}`
+          `${API_URL}/rooms/${roomCode}`
         );
 
         const data = await response.json();
@@ -96,7 +97,7 @@ function Room() {
         setMoviesLoading(true);
 
         const response = await fetch(
-          `http://127.0.0.1:8000/rooms/${roomCode}/movies`
+          `${API_URL}/rooms/${roomCode}/movies`
         );
 
         const data = await response.json();
@@ -129,7 +130,7 @@ function Room() {
     const fetchProgress = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/rooms/${roomCode}/progress`
+          `${API_URL}/rooms/${roomCode}/progress`
         );
 
         const data = await response.json();
@@ -153,7 +154,7 @@ function Room() {
     if (!roomCode) return;
 
     const socket = new WebSocket(
-      `ws://127.0.0.1:8000/ws/${roomCode}`
+      `${WS_URL}/ws/${roomCode}`
     );
 
     socketRef.current = socket;
@@ -216,7 +217,7 @@ function Room() {
       setSubmitting(true);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/rooms/${roomCode}/swipe`,
+        `${API_URL}/rooms/${roomCode}/swipe`,
         {
           method: "POST",
           headers: {

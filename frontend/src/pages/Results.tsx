@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
+const WS_URL = API_URL.replace("https://", "wss://");
 
 interface Match {
   movie_id: number;
@@ -39,10 +41,10 @@ function Results() {
       const [matchResponse, progressResponse] =
         await Promise.all([
           fetch(
-            `http://127.0.0.1:8000/rooms/${roomCode}/matches`
+            `${API_URL}/rooms/${roomCode}/matches`
           ),
           fetch(
-            `http://127.0.0.1:8000/rooms/${roomCode}/progress`
+            `${API_URL}/rooms/${roomCode}/progress`
           ),
         ]);
 
@@ -72,7 +74,7 @@ function Results() {
     if (!roomCode) return;
 
     const socket = new WebSocket(
-      `ws://127.0.0.1:8000/ws/${roomCode}`
+      `${WS_URL}/ws/${roomCode}`
     );
 
     socket.onmessage = (event) => {

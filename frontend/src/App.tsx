@@ -10,6 +10,7 @@ import "./App.css";
 import CreateRoom from "./pages/CreateRoom";
 import Room from "./pages/Room";
 import Results from "./pages/Results";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Home() {
   const [backendStatus, setBackendStatus] =
@@ -23,7 +24,7 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/health")
+    fetch(`${API_URL}/health`)
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "healthy") {
@@ -56,7 +57,7 @@ function Home() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/rooms/${normalizedCode}/join`,
+        `${API_URL}/rooms/${normalizedCode}/join`,
         {
           method: "POST",
           headers: {
