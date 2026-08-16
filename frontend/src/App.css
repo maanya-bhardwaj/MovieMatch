@@ -836,6 +836,7 @@ h1 span {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-anchor: none;
 }
 
 
@@ -854,6 +855,7 @@ h1 span {
   cursor: grab;
 
   touch-action: pan-y;
+  overscroll-behavior: contain;
 
   user-select: none;
 }
